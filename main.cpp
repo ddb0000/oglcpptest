@@ -81,3 +81,5 @@ int main() {
     glfwTerminate();
     return 0;
 }
+//compile this shit
+//g++ -o OpenGLFPS main.cpp -ID:\GLFW\include -LD:\GLFW\build\src -lglfw3 -lopengl32 -lgdi32
