@@ -17,10 +17,50 @@ const char* fragmentShaderSource = "#version 330 core\n"
     "out vec4 FragColor;\n"
     "void main()\n"
     "{\n"
-    "   FragColor = vec4(0.5, 0.5, 0.5, 1.0);\n"
-    "}\n\0";
+    "   FragColor = vec4(0.5, 0.5, 0.5, 1.0); // Grey color\n"
+    "}\0";
 
 int main() {
+    glfwInit();
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+    GLFWwindow* window = glfwCreateWindow(800, 600, "OGL FPS", nullptr, nullptr);
+    if (!window) {
+        std::cerr << "Failed to create GLFW window\n";
+        glfwTerminate();
+        return -1;
+    }
+
+    glfwMakeContextCurrent(window);
+
+    float vertices[] = {
+        0.5f,  0.0f,  0.5f,
+        0.5f,  0.0f, -0.5f,
+       -0.5f,  0.0f, -0.5f,
+       -0.5f,  0.0f,  0.5f
+    };
+    unsigned int indices[] = {
+        0, 1, 3,
+        1, 2, 3
+    };
+
+    unsigned int VBO, VAO, EBO;
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
+
+    glBindVertexArray(VAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
 
     unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
@@ -37,22 +77,10 @@ int main() {
 
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
-    
-    if (!glfwInit()) {
-        std::cerr << "failed:glfw\n";
-        return -1;
-    }
-
-    GLFWwindow* window = glfwCreateWindow(800, 600, "OGL FPS", nullptr, nullptr);
-    if (!window) {
-        std::cerr << "failed: create window\n";
-        glfwTerminate();
-        return -1;
-    }
-
-    glfwMakeContextCurrent(window);
 
     Camera camera;
+    const float movementSpeed = 0.05f;
+
 
     const float movementSpeed = 0.05f;
 
