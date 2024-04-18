@@ -1,3 +1,4 @@
+#include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <glm/glm.hpp>
@@ -40,6 +41,13 @@ int main() {
     }
 
     glfwMakeContextCurrent(window);
+    glewExperimental = GL_TRUE;
+    GLenum err = glewInit();
+    if (err != GLEW_OK) {
+        std::cerr << "Failed to initialize GLEW: " << glewGetErrorString(err) << std::endl;
+        glfwTerminate();
+        return -1;
+    }
 
     float vertices[] = {
     10.0f,  0.0f,  10.0f,
@@ -85,8 +93,6 @@ int main() {
     glDeleteShader(fragmentShader);
 
     Camera camera;
-    const float movementSpeed = 0.05f;
-
 
     const float movementSpeed = 0.05f;
 
@@ -125,5 +131,3 @@ int main() {
     glfwTerminate();
     return 0;
 }
-//compile this shit
-//g++ -o OpenGLFPS main.cpp -ID:\GLFW\include -LD:\GLFW\build\src -lglfw3 -lopengl32 -lgdi32
