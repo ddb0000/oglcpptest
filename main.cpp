@@ -1,5 +1,7 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 struct Camera {
     float x, y, z;
@@ -8,10 +10,14 @@ struct Camera {
 
 const char* vertexShaderSource = "#version 330 core\n"
     "layout (location = 0) in vec3 aPos;\n"
+    "uniform mat4 model;\n"
+    "uniform mat4 view;\n"
+    "uniform mat4 projection;\n"
     "void main()\n"
     "{\n"
-    "   gl_Position = vec4(aPos, 1.0);\n"
+    "   gl_Position = projection * view * model * vec4(aPos, 1.0);\n"
     "}\0";
+
 
 const char* fragmentShaderSource = "#version 330 core\n"
     "out vec4 FragColor;\n"
@@ -36,10 +42,10 @@ int main() {
     glfwMakeContextCurrent(window);
 
     float vertices[] = {
-        0.5f,  0.0f,  0.5f,
-        0.5f,  0.0f, -0.5f,
-       -0.5f,  0.0f, -0.5f,
-       -0.5f,  0.0f,  0.5f
+    10.0f,  0.0f,  10.0f,
+    10.0f,  0.0f, -10.0f,
+    -10.0f,  0.0f, -10.0f,
+    -10.0f,  0.0f,  10.0f
     };
     unsigned int indices[] = {
         0, 1, 3,
@@ -83,6 +89,16 @@ int main() {
 
 
     const float movementSpeed = 0.05f;
+
+    glm::mat4 model = glm::mat4(1.0f);
+    glm::mat4 view;
+    glm::mat4 projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+
+    view = glm::translate(glm::mat4(1.0f), glm::vec3(-camera.x, -camera.y, -camera.z));
+
+    glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, &model[0][0]);
+    glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "view"), 1, GL_FALSE, &view[0][0]);
+    glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projection"), 1, GL_FALSE, &projection[0][0]);
 
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
